@@ -1,4 +1,3 @@
-from re import I
 import tkinter as  tk
 
 class Game(tk.Frame):
@@ -34,10 +33,10 @@ class Game(tk.Frame):
     def add_ball(self):
         if self.ball is not None:
             self.ball.delete()
-            paddle_coords = self.paddle.get_position()
-            x = (paddle_coords[0]+paddle_coords[2]*0.5)
-            self.ball = Ball(self.canvas, x, 310)
-            self.paddle.set_ball(self.ball)
+        paddle_coords = self.paddle.get_position()
+        x = (paddle_coords[0]+paddle_coords[2])*0.5
+        self.ball = Ball(self.canvas, x, 310)
+        self.paddle.set_ball(self.ball)
 
     def add_brick(self, x, y, hits):
         brick = Brick(self.canvas, x, y, hits)
@@ -105,7 +104,7 @@ class Ball(GameObject):
         self.speed = 10
         item = canvas.create_oval(x-self.radius, y-self.radius,
                                   x+self.radius, y+self.radius,
-                                  file='white')
+                                  fill='white')
         super(Ball, self).__init__(canvas, item)
 
     def update(self):
@@ -128,9 +127,9 @@ class Ball(GameObject):
             game_object = game_objects[0]
             coords = game_object.get_position()
             if x > coords[2]:
-                self.direction[0] = 0
-        elif x < coords[0]:
-            self.direction[0] = -1
+                self.direction[0] = 1
+            elif x < coords[0]:
+                self.direction[0] = -1
         else:
             self.direction[1] *= -1
         for game_object in game_objects:
