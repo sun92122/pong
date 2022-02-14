@@ -4,7 +4,7 @@ class Game(tk.Frame):
     def __init__(self, master):
         super(Game, self).__init__(master)
         self.lives = 3
-        self.width = 600
+        self.width = 610
         self.height = 400
         self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg='#aaaaff')
 
@@ -14,6 +14,7 @@ class Game(tk.Frame):
         self.items = {}
         self.ball = None
         self.paddle = Paddle(self.canvas, self.width/2, 326)
+        self.items[self.paddle.item] = self.paddle
         for x in range(5, self.width-5, 75):
             self.add_brick(x+37.5, 50, 2)
             self.add_brick(x+37.5, 70, 2)
@@ -42,12 +43,12 @@ class Game(tk.Frame):
         brick = Brick(self.canvas, x, y, hits)
         self.items[brick.item] = brick
 
-    def draw_text(self, x, y, text, size=40):
+    def draw_text(self, x, y, text, size='40'):
         font = ('Helvetica', size)
         return self.canvas.create_text(x, y, text=text, font=font)
     
     def update_lives_text(self):
-        text = 'Lives: %s' %self.lives
+        text = 'Lives: %s' % self.lives
         if self.hub is None:
             self.hub = self.draw_text(50, 20, text, 15)
         else:
@@ -92,7 +93,7 @@ class GameObject(object):
         return self.canvas.coords(self.item)
     
     def move(self, x, y):
-        self.canvas.move(self, x, y)
+        self.canvas.move(self.item, x, y)
     
     def delete(self):
         self.canvas.delete(self.item)
@@ -130,11 +131,11 @@ class Ball(GameObject):
                 self.direction[0] = 1
             elif x < coords[0]:
                 self.direction[0] = -1
-        else:
-            self.direction[1] *= -1
+            else:
+                self.direction[1] *= -1
         for game_object in game_objects:
             if isinstance(game_object, Brick):
-                game_object.hit
+                game_object.hit()
 
 class Paddle(GameObject):
     def __init__(self, canvas, x, y):
@@ -182,6 +183,6 @@ class Brick(GameObject):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title('Pong!')
+    root.title('Hello, Pong!')
     game = Game(root)
     game.mainloop()
