@@ -3,34 +3,41 @@ import tkinter as  tk
 class Game(tk.Frame):
     def __init__(self, master):
         super(Game, self).__init__(master)
+        # 初始生命
         self.lives = 3
+        # 畫布寬度
         self.width = 610
+        # 畫布高度
         self.height = 400
         self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg='#aaaaff')
 
         self.canvas.pack()
         self.pack()
 
+        # 初始化
         self.items = {}
         self.ball = None
         self.paddle = Paddle(self.canvas, self.width/2, 326)
         self.items[self.paddle.item] = self.paddle
         for x in range(5, self.width-5, 75):
-            self.add_brick(x+37.5, 50, 2)
+            self.add_brick(x+37.5, 50, 3)
             self.add_brick(x+37.5, 70, 2)
             self.add_brick(x+37.5, 90, 2)
         self.hub = None
         self.setup_game()
         self.canvas.focus_set()
+        # 移動鍵綁定
         self.canvas.bind('<Left>', lambda _: self.paddle.move(-10))
         self.canvas.bind('<Right>', lambda _: self.paddle.move(10))
 
+    # 初始化遊戲
     def setup_game(self):
         self.add_ball()
         self.update_lives_text()
         self.text = self.draw_text(300, 200, 'Press Space to start')
         self.canvas.bind('<space>', lambda _: self.start_game())
 
+    # 新增球於paddle上方
     def add_ball(self):
         if self.ball is not None:
             self.ball.delete()
@@ -39,14 +46,17 @@ class Game(tk.Frame):
         self.ball = Ball(self.canvas, x, 310)
         self.paddle.set_ball(self.ball)
 
+    # 新增磚塊
     def add_brick(self, x, y, hits):
         brick = Brick(self.canvas, x, y, hits)
         self.items[brick.item] = brick
 
-    def draw_text(self, x, y, text, size='40'):
+    #繪製文字
+    def draw_text(self, x, y, text, size=40):
         font = ('Helvetica', size)
         return self.canvas.create_text(x, y, text=text, font=font)
     
+    # 更新生命值
     def update_lives_text(self):
         text = 'Lives: %s' % self.lives
         if self.hub is None:
@@ -54,21 +64,32 @@ class Game(tk.Frame):
         else:
             self.canvas.itemconfig(self.hub, text=text)
 
+    #開始遊戲
     def start_game(self):
+        # 解除空白鍵綁定
         self.canvas.unbind('<space>')
+        # 刪除畫布上的文字
         self.canvas.delete(self.text)
+        # 解除paddle-ball鎖定
         self.paddle.ball = None
+        # 進入主迴圈
         self.game_loop()
 
+    # 主迴圈
     def game_loop(self):
+        # 邊界檢查
         self.check_collisions()
+        # 檢查剩餘方塊
         num_bricks = len(self.canvas.find_withtag('brick'))
+        # 檢查勝利條件
         if num_bricks == 0:
             self.ball.speed = None
             self.draw_text(300, 200, 'You win!')
+        # 球落地檢查
         elif self.ball.get_position()[3] >= self.height:
             self.ball.speed = None
             self.lives -= 1
+            # 遊戲失敗檢查
             if self.lives < 0:
                 self.draw_text(300, 200, 'Game Over')
             else:
@@ -77,24 +98,28 @@ class Game(tk.Frame):
             self.ball.update()
             self.after(50, self.game_loop)
 
+    # 邊界檢查
     def check_collisions(self):
         ball_coords = self.ball.get_position()
         items = self.canvas.find_overlapping(*ball_coords)
         objects = [self.items[x] for x in items if x in self.items]
         self.ball.collide(objects)
         
-
+# 物件父型態
 class GameObject(object):
     def __init__(self, canvas, item):
         self.canvas = canvas
         self.item = item
 
+    # 取得位置
     def get_position(self):
         return self.canvas.coords(self.item)
     
+    # 移動物件
     def move(self, x, y):
         self.canvas.move(self.item, x, y)
     
+    # 刪除物件
     def delete(self):
         self.canvas.delete(self.item)
 
