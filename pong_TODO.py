@@ -15,18 +15,16 @@ class Game(tk.Frame):
         self.pack()
 
         # 初始化
-        """
-        
-        """
         # 建立空的dict用以儲存
         self.items = {}
-        self.ball = None
-        self.paddle = Paddle(self.canvas, self.width/2, 326)
-        self.items[self.paddle.item] = self.paddle
-        for x in range(5, self.width-5, 75):
-            self.add_brick(x+37.5, 50, 3)
-            self.add_brick(x+37.5, 70, 2)
-            self.add_brick(x+37.5, 90, 2)
+        '''
+        TODO
+        將.ball設為None
+        將.paddle設為新Paddle
+        以key=.paddle.item將.paddle加入.items
+        已迴圈調用.add_brick()新增所有磚塊
+        '''
+
         self.hub = None
         self.setup_game()
         self.canvas.focus_set()
@@ -45,15 +43,20 @@ class Game(tk.Frame):
     def add_ball(self):
         if self.ball is not None:
             self.ball.delete()
-        paddle_coords = self.paddle.get_position()
-        x = (paddle_coords[0]+paddle_coords[2])*0.5
-        self.ball = Ball(self.canvas, x, 310)
-        self.paddle.set_ball(self.ball)
+        '''
+        TODO
+        用.paddle.get_position()取得滑桿座標
+        將.ball設為x=滑桿中心的球
+        用.paddle.set_ball(self.ball)使球對滑桿參考
+        '''
 
     # 新增磚塊
     def add_brick(self, x, y, hits):
-        brick = Brick(self.canvas, x, y, hits)
-        self.items[brick.item] = brick
+        '''
+        TODO
+        新增一個新的Brick
+        並以key=.item將其加入self.items
+        '''
 
     #繪製文字
     def draw_text(self, x, y, text, size=40):
